@@ -1,0 +1,34 @@
+import "deploy"
+
+$svc = {
+    "Unit" => {
+        "Description" => "Run mgmt configuration management with empty graph",
+        "Documentation" => "https://github.com/purpleidea/mgmt/",
+        "After" => "network.target",
+        "Requires" => "network.target",
+    },
+    "Service" => {
+        "ExecStart" => "/usr/bin/mgmt run empty",
+        "ExecReload" => "/bin/true",
+        "RestartSec" => "5s",
+        "Restart" => "always",
+    },
+    "Install" => {
+        "WantedBy" => "default.target",
+    },
+}
+
+# Using an inline template like this works just fine
+# $tpl = "{{ range $name, $vals := . }}[{{ $name }}]\n{{ range $key, $val := $vals }}{{ $key }}={{ $val }}\n{{ end }}\n{{ end }}"
+
+file "/etc/systemd/system/mgmt.service" {
+    state => "exists",
+    # content => template($tpl, $svc),
+    content => template(deploy.readfile("/files/systemd.unit.tpl"), $svc),
+    mode => "0644",
+}
+
+svc "mgmt" {
+    state => "running",
+    startup => "enabled",
+}
