@@ -1,0 +1,24 @@
+import "os"
+
+$sudo_group = if os.is_debian() { "sudo" } else { "wheel" }
+
+$users = [
+    struct{
+        name => "frebib",
+        present => true,
+        groups => [
+            $sudo_group,
+            "docker",
+            "systemd-journal",
+        ],
+        ssh_keys => [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINk+sOUEXKsGqITyMhna9v77ADGagkr3YMpgZFkrvqcd frebib@frebib-PC",
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOUWxxKFR+SK0BTCyafZnTiquM2CTLwzr1XeheLoj0b/ frebib@frebib-OnePlus8",
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL+T8ChEU9YmpE2BY77oEtKzedB8HWDSM5bErDN9gcvj frebib@frebib-Cf",
+        ],
+    },
+]
+
+import "user/"
+
+include user.create($users)

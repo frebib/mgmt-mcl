@@ -1,0 +1,19 @@
+import "fmt"
+
+class create($user) {
+    group $user.name {}
+
+    user $user.name {
+        state => if $user.present { "exists" } else { "absent" },
+        group => $user.name,
+        groups => $user.groups,
+    }
+
+    file fmt.printf("/home/%s/.ssh/", $user.name) {
+        #path => fmt.printf("/home/%s/.ssh/", $user.name),
+        state => "exists",
+        mode => 0700,
+        owner => $user.name,
+        group => $user.name,
+    }
+}
